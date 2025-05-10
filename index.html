@@ -227,6 +227,12 @@
       }
 
       function refresh() {
+        if (!config.apiKey) {
+          config.apiKey = prompt("Please enter your API key");
+          if (config.apiKey) {
+            localStorage.setItem("minigraun.config", JSON.stringify(config));
+          }
+        }
         search().then(
           (ok) => {
             const details = document.createElement("details");
