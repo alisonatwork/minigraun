@@ -81,6 +81,10 @@
         margin: var(--half-margin);
       }
 
+      .hidden {
+        display: none;
+      }
+
       aside {
         display: flex;
         flex-flow: row wrap;
@@ -137,12 +141,16 @@
       <h1>minigraun.</h1>
     </header>
     <aside>
-      <button onclick="cols(1)">1</button>
-      <button onclick="cols(2)">2</button>
-      <button onclick="cols(3)">3</button>
-      <button onclick="cols(4)">4</button>
-      <button onclick="imgHeight(80)">80px</button>
-      <button onclick="imgHeight(100)">100px</button>
+      <button onclick="toggle(this)">settings</button>
+      <span id="settings" class="hidden">
+        <button onclick="cols(1)">1</button>
+        <button onclick="cols(2)">2</button>
+        <button onclick="cols(3)">3</button>
+        <button onclick="cols(4)">4</button>
+        <button onclick="imgHeight(80)">80px</button>
+        <button onclick="imgHeight(100)">100px</button>
+      </span>
+      <input id="filter" oninput="filter()" placeholder="Type to filter..." />
       <button onclick="refresh()">refresh</button>
       <span id="status"></span>
     </aside>
@@ -151,9 +159,11 @@
       <section id="debug"></section>
     </main>
     <script>
-      const results = document.getElementById("results");
-      const debug = document.getElementById("debug");
-      const status = document.getElementById("status");
+      const settingsPanel = document.getElementById("settings");
+      const filterInput = document.getElementById("filter");
+      const resultsSection = document.getElementById("results");
+      const debugSection = document.getElementById("debug");
+      const statusLine = document.getElementById("status");
       const config = {
         cols: 1,
         imgHeight: 80,
@@ -193,6 +203,18 @@
         }
       });
 
+      function toggle(e) {
+        if (e.textContent == "settings") {
+          filterInput.classList.add("hidden");
+          settingsPanel.classList.remove("hidden");
+          e.textContent = "filter";
+        } else if (e.textContent == "filter") {
+          settingsPanel.classList.add("hidden");
+          filterInput.classList.remove("hidden");
+          e.textContent = "settings";
+        }
+      }
+
       function cols(n) {
         document.documentElement.style.setProperty("--cols", Array(n).fill("1fr").join(" "));
         if (config.cols != n) {
@@ -209,12 +231,28 @@
         }
       }
 
+      function filter() {
+        if (filterInput.value) {
+          const value = filterInput.value.toLowerCase();
+          for (const article of resultsSection.children) {
+            if (article.textContent.toLowerCase().includes(value)) {
+              article.classList.remove("hidden");
+            } else {
+              article.classList.add("hidden");
+            }
+          }
+        } else {
+          for (const article of resultsSection.children) {
+            article.classList.remove("hidden");
+          }
+        }
+      }
+
       async function search() {
         const params = new URLSearchParams({
           "api-key": config.apiKey,
           "page-size": 48,
           "show-fields": "headline,trailText,thumbnail,lastModified",
-          // "order-date": "last-modified",
           section: config.sections.join("|"),
           tag: config.tags.join("|"),
         });
@@ -241,16 +279,16 @@
             const pre = document.createElement("pre");
             pre.textContent = JSON.stringify(ok.response, null, 2);
             details.replaceChildren(summary, pre);
-            debug.replaceChildren(details);
+            debugSection.replaceChildren(details);
 
             render(ok.response);
             localStorage.setItem("minigraun.response", JSON.stringify(ok.response));
 
-            status.textContent = `Updated at ${new Date()}`;
+            statusLine.textContent = `Updated at ${new Date()}`;
           },
           (err) => {
             console.error(err);
-            status.textContent = `Last error: ${err.message}`;
+            statusLine.textContent = `Last error: ${err.message}`;
           }
         );
       }
@@ -275,7 +313,8 @@
             </div>`;
           articles.push(article);
         }
-        results.replaceChildren(...articles);
+        resultsSection.replaceChildren(...articles);
+        filter();
       }
     </script>
   </body>
