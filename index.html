@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns:svg='http://www.w3.org/2000/svg' xmlns='http://www.w3.org/2000/svg' version='1.1' width='144px' height='144px'%3E%3Cpath d='M 70.5 128.044 C 55.859 128.044 50.833 122.857 50.833 117.271 C 50.833 113.38 51.866 110.687 53.932 108.191 L 82.271 108.191 C 88.896 108.191 91.906 110.187 91.906 114.377 C 91.926 122.757 87.287 128.044 70.5 128.044 Z M 70.729 27.487 C 76.589 27.487 80.364 30.08 80.364 46.242 C 80.364 62.403 76.579 64.089 70.818 64.089 C 65.057 64.089 61.342 62.742 61.342 46.261 C 61.342 29.802 65.017 27.507 70.858 27.507 L 70.729 27.487 Z M 88.509 83.651 L 59.703 83.651 C 56.624 83.651 54.041 81.257 54.041 78.464 C 54.041 76.269 55.63 73.975 57.617 72.478 C 61.988 73.775 65.563 74.174 70.927 74.174 C 91.687 74.174 105.891 64.697 105.891 47.04 C 105.891 39.16 102.614 34.67 97.448 30.08 L 97.448 29.482 L 110.759 34.171 L 112.547 34.27 L 112.547 18 L 111.057 18 L 90.565 22.09 L 89.422 22.09 C 84.317 20.195 77.205 18.199 70.748 18.199 C 49.988 18.199 35.625 28.545 35.625 46.113 C 35.625 56.817 40.989 64.787 49.005 69.196 L 49.005 70.044 C 44.376 73.316 35.496 80.04 35.496 88.649 C 35.496 94.934 39.628 101.149 48.27 103.015 L 48.27 103.882 C 39.181 105.778 29 108.771 29 119.245 C 29 130.021 44.545 138 69.884 138 C 101.372 138 115 125.829 115 106.576 C 115 90.714 106.259 83.333 88.479 83.333 L 88.509 83.651 Z' style='fill:%230a5787'%3E%3C/path%3E%3C/svg%3E"
+    />
+    <title>minigraun.</title>
+    <style>
+      :root {
+        --background-color: ghostwhite;
+        --color: black;
+        --highlight-color: cornflowerblue;
+        --header-color: ghostwhite;
+
+        --margin: 8px;
+        --half-margin: 4px;
+
+        --cols: 1fr;
+        --img-height: 80px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --background-color: black;
+          --color: ghostwhite;
+        }
+      }
+
+      h1,
+      h2,
+      p {
+        font-size: 1em;
+        margin-block: 0;
+      }
+
+      a {
+        color: var(--highlight-color);
+        text-decoration: none;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        font-size: smaller;
+        background-color: var(--background-color);
+        color: var(--color);
+
+        display: flex;
+        flex-direction: column;
+        gap: var(--margin);
+        margin: var(--margin);
+      }
+
+      header {
+        background-color: var(--highlight-color);
+        color: var(--header-color);
+
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+      }
+
+      header span.logo {
+        background-color: var(--background-color);
+        box-shadow: inset 0 0 1px var(--highlight-color);
+        color: var(--highlight-color);
+        cursor: default;
+        display: inline-block;
+        font-family: "Times New Roman", serif;
+        font-size: 1.5em;
+        font-weight: 800;
+        height: 1.2em;
+        line-height: 1;
+        text-align: center;
+        width: 1.2em;
+      }
+
+      header h1 {
+        margin: var(--half-margin);
+      }
+
+      aside {
+        display: flex;
+        flex-flow: row wrap;
+        gap: var(--half-margin);
+      }
+
+      #status {
+        margin: var(--half-margin);
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        gap: var(--margin);
+      }
+
+      #results {
+        display: grid;
+        gap: var(--margin);
+        grid-template-columns: var(--cols);
+      }
+
+      article {
+        display: flex;
+        flex-direction: row;
+        gap: var(--margin);
+      }
+
+      article img {
+        height: var(--img-height);
+      }
+
+      article time {
+        cursor: default;
+      }
+
+      article .content {
+        display: flex;
+        flex-flow: column;
+        gap: var(--half-margin);
+      }
+
+      article .content .headline {
+        display: flex;
+        flex-flow: row wrap;
+        gap: var(--half-margin);
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <span class="logo">g</span>
+      <h1>minigraun.</h1>
+    </header>
+    <aside>
+      <button onclick="cols(1)">1</button>
+      <button onclick="cols(2)">2</button>
+      <button onclick="cols(3)">3</button>
+      <button onclick="cols(4)">4</button>
+      <button onclick="imgHeight(80)">80px</button>
+      <button onclick="imgHeight(100)">100px</button>
+      <button onclick="refresh()">refresh</button>
+      <span id="status"></span>
+    </aside>
+    <main>
+      <section id="results"></section>
+      <section id="debug"></section>
+    </main>
+    <script>
+      const results = document.getElementById("results");
+      const debug = document.getElementById("debug");
+      const status = document.getElementById("status");
+      const config = {
+        cols: 1,
+        imgHeight: 80,
+        apiKey: "",
+        sections: [
+          "business",
+          "cities",
+          "community",
+          "education",
+          "environment",
+          "global-development",
+          "inequality",
+          "law",
+          "media",
+          "news",
+          "politics",
+          "science",
+          "society",
+          "technology",
+          "world",
+        ],
+        tags: ["tone/analysis", "tone/news", "tone/features"],
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const storedConfig = localStorage.getItem("minigraun.config");
+        if (storedConfig) {
+          const c = JSON.parse(storedConfig);
+          Object.assign(config, c);
+          cols(c.cols);
+          imgHeight(c.imgHeight);
+        }
+        localStorage.setItem("minigraun.config", JSON.stringify(config));
+        const storedResponse = localStorage.getItem("minigraun.response");
+        if (storedResponse) {
+          render(JSON.parse(storedResponse));
+        }
+      });
+
+      function cols(n) {
+        document.documentElement.style.setProperty("--cols", Array(n).fill("1fr").join(" "));
+        if (config.cols != n) {
+          config.cols = n;
+          localStorage.setItem("minigraun.config", JSON.stringify(config));
+        }
+      }
+
+      function imgHeight(n) {
+        document.documentElement.style.setProperty("--img-height", `${n}px`);
+        if (config.imgHeight != n) {
+          config.imgHeight = n;
+          localStorage.setItem("minigraun.config", JSON.stringify(config));
+        }
+      }
+
+      async function search() {
+        const params = new URLSearchParams({
+          "api-key": config.apiKey,
+          "page-size": 48,
+          "show-fields": "headline,trailText,thumbnail,lastModified",
+          // "order-date": "last-modified",
+          section: config.sections.join("|"),
+          tag: config.tags.join("|"),
+        });
+        const url = "https://content.guardianapis.com/search?" + params.toString();
+        const res = await fetch(url);
+        if (res.ok) {
+          return res.json();
+        }
+        throw new Error(`Search request failed: ${res.status}`);
+      }
+
+      function refresh() {
+        search().then(
+          (ok) => {
+            const details = document.createElement("details");
+            const summary = document.createElement("summary");
+            summary.textContent = "API response";
+            const pre = document.createElement("pre");
+            pre.textContent = JSON.stringify(ok.response, null, 2);
+            details.replaceChildren(summary, pre);
+            debug.replaceChildren(details);
+
+            render(ok.response);
+            localStorage.setItem("minigraun.response", JSON.stringify(ok.response));
+
+            status.textContent = `Updated at ${new Date()}`;
+          },
+          (err) => {
+            console.error(err);
+            status.textContent = `Last error: ${err.message}`;
+          }
+        );
+      }
+
+      function render(response) {
+        const articles = [];
+        for ({ webPublicationDate, ...r } of response.results) {
+          const published = new Date(webPublicationDate);
+          const timestr = published.toLocaleTimeString(undefined, {
+            hour12: false,
+            timeStyle: "short",
+          });
+          const article = document.createElement("article");
+          article.innerHTML = `<img src="${r.fields.thumbnail}" alt="thumbnail">
+            <div class="content">
+              <div class="headline">
+                <time datetime="${webPublicationDate}" title="${webPublicationDate}">${timestr}</time>
+                <span class="section"><a href="https://www.theguardian.com/${r.sectionId}">${r.sectionId}</a></span>
+                <h2><a href="${r.webUrl}">${r.webTitle}</a></h2>
+              </div>
+              <p class="trail">${r.fields.trailText}</p>
+            </div>`;
+          articles.push(article);
+        }
+        results.replaceChildren(...articles);
+      }
+    </script>
+  </body>
+</html>
