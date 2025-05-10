@@ -143,12 +143,12 @@
     <aside>
       <button onclick="toggle(this)">settings</button>
       <span id="settings" class="hidden">
-        <button onclick="cols(1)">1</button>
-        <button onclick="cols(2)">2</button>
-        <button onclick="cols(3)">3</button>
-        <button onclick="cols(4)">4</button>
-        <button onclick="imgHeight(80)">80px</button>
-        <button onclick="imgHeight(100)">100px</button>
+        <button onclick="setCols(1)">1</button>
+        <button onclick="setCols(2)">2</button>
+        <button onclick="setCols(3)">3</button>
+        <button onclick="setCols(4)">4</button>
+        <button onclick="setImgHeight(80)">80px</button>
+        <button onclick="setImgHeight(100)">100px</button>
       </span>
       <input id="filter" oninput="filter()" placeholder="Type to filter..." />
       <button onclick="refresh()">refresh</button>
@@ -191,15 +191,15 @@
       document.addEventListener("DOMContentLoaded", () => {
         const storedConfig = localStorage.getItem("minigraun.config");
         if (storedConfig) {
-          const c = JSON.parse(storedConfig);
-          Object.assign(config, c);
-          cols(c.cols);
-          imgHeight(c.imgHeight);
+          Object.assign(config, JSON.parse(storedConfig));
+          setCols(config.cols);
+          setImgHeight(config.imgHeight);
         }
         localStorage.setItem("minigraun.config", JSON.stringify(config));
-        const storedResponse = localStorage.getItem("minigraun.response");
-        if (storedResponse) {
-          render(JSON.parse(storedResponse));
+        localStorage.removeItem("minigraun.response"); // remove legacy
+        const results = localStorage.getItem("minigraun.results");
+        if (results) {
+          render(JSON.parse(results));
         }
       });
 
@@ -215,7 +215,7 @@
         }
       }
 
-      function cols(n) {
+      function setCols(n) {
         document.documentElement.style.setProperty("--cols", Array(n).fill("1fr").join(" "));
         if (config.cols != n) {
           config.cols = n;
@@ -223,7 +223,7 @@
         }
       }
 
-      function imgHeight(n) {
+      function setImgHeight(n) {
         document.documentElement.style.setProperty("--img-height", `${n}px`);
         if (config.imgHeight != n) {
           config.imgHeight = n;
@@ -252,7 +252,7 @@
         const params = new URLSearchParams({
           "api-key": config.apiKey,
           "page-size": 48,
-          "show-fields": "headline,trailText,thumbnail,lastModified",
+          "show-fields": "trailText,thumbnail,lastModified",
           section: config.sections.join("|"),
           tag: config.tags.join("|"),
         });
@@ -281,8 +281,8 @@
             details.replaceChildren(summary, pre);
             debugSection.replaceChildren(details);
 
-            render(ok.response);
-            localStorage.setItem("minigraun.response", JSON.stringify(ok.response));
+            render(ok.response.results);
+            localStorage.setItem("minigraun.results", JSON.stringify(ok.response.results));
 
             statusLine.textContent = `Updated at ${new Date()}`;
           },
@@ -293,9 +293,9 @@
         );
       }
 
-      function render(response) {
+      function render(results) {
         const articles = [];
-        for ({ webPublicationDate, ...r } of response.results) {
+        for ({ webPublicationDate, ...r } of results) {
           const published = new Date(webPublicationDate);
           const timestr = published.toLocaleTimeString(undefined, {
             hour12: false,
