@@ -330,7 +330,7 @@
           heading.href = result.webUrl;
           heading.textContent = result.webTitle;
 
-          article.querySelector(".trail").textContent = result.fields.trailText;
+          article.querySelector(".trail").innerHTML = result.fields.trailText;
 
           articles.push(article);
         }
