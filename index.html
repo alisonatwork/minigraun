@@ -163,12 +163,26 @@
         </details>
       </section>
     </main>
+    <template id="article">
+      <article>
+        <img alt="thumbnail" />
+        <div class="content">
+          <div class="headline">
+            <time></time>
+            <span class="section"><a></a></span>
+            <h2><a></a></h2>
+          </div>
+          <p class="trail"></p>
+        </div>
+      </article>
+    </template>
     <script>
       const settingsPanel = document.getElementById("settings");
       const filterInput = document.getElementById("filter");
       const resultsSection = document.getElementById("results");
       const debugSection = document.getElementById("debug");
       const statusLine = document.getElementById("status");
+      const articleTemplate = document.getElementById("article");
       const config = {
         cols: 1,
         imgHeight: 80,
@@ -296,22 +310,28 @@
 
       function render(results) {
         const articles = [];
-        for ({ webPublicationDate, ...r } of results) {
-          const published = new Date(webPublicationDate);
-          const timestr = published.toLocaleTimeString(undefined, {
+        for (result of results) {
+          const article = articleTemplate.content.cloneNode(true);
+
+          article.querySelector("img").src = result.fields.thumbnail;
+
+          const time = article.querySelector("time");
+          time.dateTime = time.title = result.webPublicationDate;
+          time.textContent = new Date(time.dateTime).toLocaleTimeString(undefined, {
             hour12: false,
             timeStyle: "short",
           });
-          const article = document.createElement("article");
-          article.innerHTML = `<img src="${r.fields.thumbnail}" alt="thumbnail">
-            <div class="content">
-              <div class="headline">
-                <time datetime="${webPublicationDate}" title="${webPublicationDate}">${timestr}</time>
-                <span class="section"><a href="https://www.theguardian.com/${r.sectionId}">${r.sectionId}</a></span>
-                <h2><a href="${r.webUrl}">${r.webTitle}</a></h2>
-              </div>
-              <p class="trail">${r.fields.trailText}</p>
-            </div>`;
+
+          const section = article.querySelector(".section a");
+          section.href = `https://www.theguardian.com/${result.sectionId}`;
+          section.textContent = result.sectionId;
+
+          const heading = article.querySelector("h2 a");
+          heading.href = result.webUrl;
+          heading.textContent = result.webTitle;
+
+          article.querySelector(".trail").textContent = result.fields.trailText;
+
           articles.push(article);
         }
         resultsSection.replaceChildren(...articles);
