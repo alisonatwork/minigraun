@@ -156,7 +156,12 @@
     </aside>
     <main>
       <section id="results"></section>
-      <section id="debug"></section>
+      <section id="debug" class="hidden">
+        <details>
+          <summary>API response</summary>
+          <pre></pre>
+        </details>
+      </section>
     </main>
     <script>
       const settingsPanel = document.getElementById("settings");
@@ -273,13 +278,9 @@
         }
         search().then(
           (ok) => {
-            const details = document.createElement("details");
-            const summary = document.createElement("summary");
-            summary.textContent = "API response";
-            const pre = document.createElement("pre");
+            const pre = debugSection.querySelector("pre");
             pre.textContent = JSON.stringify(ok.response, null, 2);
-            details.replaceChildren(summary, pre);
-            debugSection.replaceChildren(details);
+            debugSection.classList.remove("hidden");
 
             render(ok.response.results);
             localStorage.setItem("minigraun.results", JSON.stringify(ok.response.results));
