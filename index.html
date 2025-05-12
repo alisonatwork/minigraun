@@ -141,18 +141,22 @@
       <h1>minigraun.</h1>
     </header>
     <aside>
-      <button onclick="toggle(this)">settings</button>
       <span id="settings" class="hidden">
+        <button onclick="showToolbar()">toolbar</button>
         <button onclick="setCols(1)">1</button>
         <button onclick="setCols(2)">2</button>
         <button onclick="setCols(3)">3</button>
         <button onclick="setCols(4)">4</button>
         <button onclick="setImgHeight(80)">80px</button>
         <button onclick="setImgHeight(100)">100px</button>
+        <button onclick="setApiKey()">key</button>
       </span>
-      <input id="filter" oninput="filter()" placeholder="Type to filter..." />
-      <button onclick="refresh()">refresh</button>
-      <span id="status"></span>
+      <span id="toolbar">
+        <button onclick="showSettings()">settings</button>
+        <input oninput="filter(this.value)" placeholder="Type to filter..." />
+        <button onclick="refresh()">refresh</button>
+        <span id="status"></span>
+      </span>
     </aside>
     <main>
       <section id="results"></section>
@@ -178,7 +182,7 @@
     </template>
     <script>
       const settingsPanel = document.getElementById("settings");
-      const filterInput = document.getElementById("filter");
+      const toolbarPanel = document.getElementById("toolbar");
       const resultsSection = document.getElementById("results");
       const debugSection = document.getElementById("debug");
       const statusLine = document.getElementById("status");
@@ -222,16 +226,14 @@
         }
       });
 
-      function toggle(e) {
-        if (e.textContent == "settings") {
-          filterInput.classList.add("hidden");
-          settingsPanel.classList.remove("hidden");
-          e.textContent = "filter";
-        } else if (e.textContent == "filter") {
-          settingsPanel.classList.add("hidden");
-          filterInput.classList.remove("hidden");
-          e.textContent = "settings";
-        }
+      function showSettings() {
+        toolbarPanel.classList.add("hidden");
+        settingsPanel.classList.remove("hidden");
+      }
+
+      function showToolbar() {
+        settingsPanel.classList.add("hidden");
+        toolbarPanel.classList.remove("hidden");
       }
 
       function setCols(n) {
@@ -250,9 +252,17 @@
         }
       }
 
-      function filter() {
-        if (filterInput.value) {
-          const value = filterInput.value.toLowerCase();
+      function setApiKey() {
+        const newApiKey = prompt("Please enter your API key", config.apiKey);
+        if (newApiKey !== null && newApiKey != config.apiKey) {
+          config.apiKey = newApiKey;
+          localStorage.setItem("minigraun.config", JSON.stringify(config));
+        }
+      }
+
+      function filter(s) {
+        if (s) {
+          const value = s.toLowerCase();
           for (const article of resultsSection.children) {
             if (article.textContent.toLowerCase().includes(value)) {
               article.classList.remove("hidden");
@@ -285,10 +295,7 @@
 
       function refresh() {
         if (!config.apiKey) {
-          config.apiKey = prompt("Please enter your API key");
-          if (config.apiKey) {
-            localStorage.setItem("minigraun.config", JSON.stringify(config));
-          }
+          setApiKey();
         }
         search().then(
           (ok) => {
