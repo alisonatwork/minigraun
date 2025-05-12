@@ -176,7 +176,7 @@
             <span class="section"><a></a></span>
             <h2><a></a></h2>
           </div>
-          <p class="trail"></p>
+          <p></p>
         </div>
       </article>
     </template>
@@ -219,7 +219,6 @@
           setImgHeight(config.imgHeight);
         }
         localStorage.setItem("minigraun.config", JSON.stringify(config));
-        localStorage.removeItem("minigraun.response"); // remove legacy
         const results = localStorage.getItem("minigraun.results");
         if (results) {
           render(JSON.parse(results));
@@ -337,7 +336,7 @@
           heading.href = result.webUrl;
           heading.textContent = result.webTitle;
 
-          article.querySelector(".trail").innerHTML = result.fields.trailText;
+          article.querySelector("p").innerHTML = result.fields.trailText;
 
           articles.push(article);
         }
