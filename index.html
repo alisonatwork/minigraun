@@ -20,6 +20,8 @@
 
         --cols: 1fr;
         --img-height: 80px;
+
+        --font-size: smaller;
       }
 
       @media (prefers-color-scheme: dark) {
@@ -32,7 +34,7 @@
       h1,
       h2,
       p {
-        font-size: 1em;
+        font-size: inherit;
         margin-block: 0;
       }
 
@@ -43,7 +45,7 @@
 
       body {
         font-family: "Arial", sans-serif;
-        font-size: smaller;
+        font-size: var(--font-size);
         background-color: var(--background-color);
         color: var(--color);
 
@@ -78,7 +80,17 @@
       }
 
       header h1 {
+        flex-grow: 1;
         margin: var(--half-margin);
+      }
+
+      header nav button {
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: inherit;
+        margin: var(--half-margin);
+        padding: 0;
       }
 
       .hidden {
@@ -139,20 +151,24 @@
     <header>
       <span class="logo">g</span>
       <h1>minigraun.</h1>
+      <nav>
+        <button onclick="toggleSettings(this)">settings</button>
+      </nav>
     </header>
     <aside>
       <span id="settings" class="hidden">
-        <button onclick="showToolbar()">toolbar</button>
+        <button onclick="setFontSize('smaller')">a</button>
+        <button onclick="setFontSize('inherit')">A</button>
         <button onclick="setCols(1)">1</button>
         <button onclick="setCols(2)">2</button>
         <button onclick="setCols(3)">3</button>
         <button onclick="setCols(4)">4</button>
+        <button onclick="setImgHeight(0)">0px</button>
         <button onclick="setImgHeight(80)">80px</button>
         <button onclick="setImgHeight(100)">100px</button>
         <button onclick="setApiKey()">key</button>
       </span>
       <span id="toolbar">
-        <button onclick="showSettings()">settings</button>
         <input
           type="search"
           name="filter"
@@ -193,6 +209,7 @@
       const statusLine = document.getElementById("status");
       const articleTemplate = document.getElementById("article");
       const config = {
+        fontSize: "smaller",
         cols: 1,
         imgHeight: 80,
         apiKey: "",
@@ -230,14 +247,24 @@
         }
       });
 
-      function showSettings() {
-        toolbarPanel.classList.add("hidden");
-        settingsPanel.classList.remove("hidden");
+      function toggleSettings(e) {
+        if (e.textContent == "settings") {
+          toolbarPanel.classList.add("hidden");
+          settingsPanel.classList.remove("hidden");
+          e.textContent = "toolbar";
+        } else if (e.textContent == "toolbar") {
+          settingsPanel.classList.add("hidden");
+          toolbarPanel.classList.remove("hidden");
+          e.textContent = "settings";
+        }
       }
 
-      function showToolbar() {
-        settingsPanel.classList.add("hidden");
-        toolbarPanel.classList.remove("hidden");
+      function setFontSize(s) {
+        document.documentElement.style.setProperty("--font-size", s);
+        if (config.fontSize != s) {
+          config.fontSize = s;
+          localStorage.setItem("minigraun.config", JSON.stringify(config));
+        }
       }
 
       function setCols(n) {
