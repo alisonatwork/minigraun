@@ -237,6 +237,7 @@
         const storedConfig = localStorage.getItem("minigraun.config");
         if (storedConfig) {
           Object.assign(config, JSON.parse(storedConfig));
+          setFontSize(config.fontSize);
           setCols(config.cols);
           setImgHeight(config.imgHeight);
         }
